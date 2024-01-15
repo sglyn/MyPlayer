@@ -89,7 +89,7 @@ void Player::prepareInner() {
             streamVideo = new StreamVideo(javaCaller, avFormatContext,avCodecContext, avStream);
             streamVideo->setWindow(window);
         } else if (mediaType == AVMEDIA_TYPE_AUDIO) {
-           // streamAudio = new StreamAudio(javaCaller,avFormatContext, avCodecContext, avStream);
+            streamAudio = new StreamAudio(javaCaller,avFormatContext, avCodecContext, avStream);
         }
     }
 
@@ -133,8 +133,7 @@ void Player::demuxInner() {
             if (streamVideo && packet->stream_index == streamVideo->steamIndex()) {
                 streamVideo->decodeQueue.put(packet);
             } else if (streamAudio && packet->stream_index == streamAudio->steamIndex()) {
-                //streamAudio->decodeQueue.put(packet);
-                av_packet_free(&packet);
+                streamAudio->decodeQueue.put(packet);
             } else {
                 av_packet_free(&packet);
             }
@@ -142,8 +141,8 @@ void Player::demuxInner() {
             av_packet_free(&packet);
             if (ret == AVERROR_EOF) {
                 if (isFinish()) {
-                    LOGE("Video.decodeQueue.size=%d",streamVideo->decodeQueue.size());
-                    //LOGE("Audio.playQueue.size=%d",streamAudio->playQueue.size());
+                    //LOGE("Video.decodeQueue.size=%d",streamVideo->decodeQueue.size());
+                    LOGE("Audio.playQueue.size=%d",streamAudio->playQueue.size());
                     break;
                 }
             } else {
@@ -175,7 +174,7 @@ bool Player::isFinish() {
     if (streamAudio && !streamAudio->eof()) {
         eofAudio = false;
     }
-    //LOGE("eof=%d, eofAudio=%d  eofVideo=%d", eofAudio && eofVideo, eofAudio, eofVideo);
+    LOGE("eof=%d, eofAudio=%d  eofVideo=%d", eofAudio && eofVideo, eofAudio, eofVideo);
     return eofAudio && eofVideo;
 }
 

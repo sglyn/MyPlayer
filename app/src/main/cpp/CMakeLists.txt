@@ -57,5 +57,8 @@ target_link_libraries(
         swresample
         swscale
 
+        OpenSLES
+        z
+
         android
         log)
