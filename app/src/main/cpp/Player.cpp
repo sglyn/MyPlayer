@@ -24,6 +24,7 @@ void Player::setPath(const char *p) {
 }
 
 Player::~Player() {
+    avformat_network_deinit();
     if (path) {
         delete[] path;
         path = 0;
@@ -132,7 +133,8 @@ void Player::demuxInner() {
             if (streamVideo && packet->stream_index == streamVideo->steamIndex()) {
                 streamVideo->decodeQueue.put(packet);
             } else if (streamAudio && packet->stream_index == streamAudio->steamIndex()) {
-                streamAudio->decodeQueue.put(packet);
+                //streamAudio->decodeQueue.put(packet);
+                av_packet_free(&packet);
             } else {
                 av_packet_free(&packet);
             }
@@ -183,6 +185,20 @@ void Player::release() {
         avformat_close_input(&avFormatContext);
         avformat_free_context(avFormatContext);
         avFormatContext = 0;
+    }
+
+    if(javaCaller){
+        delete javaCaller;
+        javaCaller = 0;
+    }
+
+    if(streamVideo){
+        delete streamVideo;
+        streamVideo = 0;
+    }
+    if(streamAudio){
+        delete streamAudio;
+        streamAudio = 0;
     }
 }
 
