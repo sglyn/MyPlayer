@@ -149,8 +149,8 @@ void Player::demuxInner() {
             av_packet_free(&packet);
             if (ret == AVERROR_EOF) {
                 if (isFinish()) {
-                    LOGE("Video.decodeQueue.size=%d",streamVideo->decodeQueue.size());
-                    LOGE("Audio.playQueue.size=%d", streamAudio->playQueue.size());
+                    LOGE("Video.decodeQueue.size=%d  Video.playQueue.size=%d",streamVideo->decodeQueue.size(),streamVideo->playQueue.size());
+                    LOGE("Audio.decodeQueue.size=%d  Audio.playQueue.size=%d",streamAudio->decodeQueue.size(),streamAudio->playQueue.size());
                     break;
                 }
             } else {
