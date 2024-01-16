@@ -12,10 +12,10 @@
 
 class Synchronizer {
 public:
-    double clockVideo = 0.0;
-    double clockAudio = 0.0;
+    double clockVideo = -1.0;
+    double clockAudio = -1.0;
 
-    double calcDelay(double videoDalay);
+    double calcDelay(double videoDelay);
 
 };
 
