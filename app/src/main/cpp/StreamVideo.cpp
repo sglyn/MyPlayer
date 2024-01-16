@@ -11,7 +11,7 @@ extern "C" {
 #include "libavutil/imgutils.h"
 }
 
-void funHandeDecodeSpeed(Stream *thiz) {
+void funHandeVideoDecodeSpeed(Stream *thiz) {
     ((StreamVideo *) thiz)->handeDecodeSpeed();
 }
 
@@ -21,15 +21,17 @@ StreamVideo::StreamVideo(JavaCaller *javaCaller, AVFormatContext *avFormatContex
         : Stream(javaCaller, avFormatContext, avCodecContext, avStream) {
 
     LOGE("StreamVideo::StreamVideo()..");
-    decodeSpeedHandler = funHandeDecodeSpeed;
+    decodeSpeedHandler = funHandeVideoDecodeSpeed;
     calcFps();
-
     pthread_mutex_init(&surfaceMutex, 0);
 }
 
 
 StreamVideo::~StreamVideo() {
+    LOGE("StreamVideo::~StreamVideo()");
+
     pthread_mutex_destroy(&surfaceMutex);
+    release();
 }
 
 void StreamVideo::handeDecodeSpeed() {
@@ -122,12 +124,7 @@ void StreamVideo::draw(uint8_t **data, int *linesizes) {
 
 void StreamVideo::actualStop() {
     LOGE("StreamVideo::actualStop()");
-
-    if (window) {
-        ANativeWindow_release(window);
-        window = 0;
-    }
-
+    release();
 }
 
 
@@ -162,6 +159,13 @@ void StreamVideo::setWindow(ANativeWindow *window_) {
 double StreamVideo::syc(double curVideoFrameDelay) {
     // 音视频同步
     return curVideoFrameDelay;
+}
+
+void StreamVideo::release() {
+    if (window) {
+        ANativeWindow_release(window);
+        window = 0;
+    }
 }
 
 

@@ -17,6 +17,7 @@ extern "C" {
 
 class StreamAudio : public Stream {
     friend void playerBufferQueueCallback(SLAndroidSimpleBufferQueueItf queue, void *thiz);
+    friend void funAudioHandeDecodeSpeed(Stream *thiz);
 public:
     StreamAudio(JavaCaller *javaCaller, AVFormatContext *avFormatContext,
                 AVCodecContext *avCodecContext, AVStream *avStream);
@@ -27,9 +28,7 @@ public:
 
     virtual void actualStop();
 
-    int fillBuffer();
 
-    void handeDecodeSpeed();
 private:
     SwrContext *swrContext;
 
@@ -39,6 +38,22 @@ private:
 
     int maxSampleBufferSize = 0;
     uint8_t *buffer = 0;
+
+    //OpenSLES
+    SLObjectItf engine = 0;
+    SLEngineItf engineIterface = 0;
+
+    SLObjectItf slObjectOutputMix = 0;
+    SLObjectItf slPlayerObject = 0;
+
+    SLAndroidSimpleBufferQueueItf slAndroidSimpleBufferQueueItf = 0;
+    SLPlayItf slPlayItf = 0;
+
+private:
+    int fillBuffer();
+    void handeDecodeSpeed();
+    void release();
+    void releaseOpenSLES();
 };
 
 

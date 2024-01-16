@@ -11,7 +11,7 @@
 
 
 class StreamVideo : public Stream {
-
+    friend void funHandeVideoDecodeSpeed(Stream *thiz);
 public:
     StreamVideo(JavaCaller *javaCaller,
                 AVFormatContext* avFormatContext,
@@ -23,23 +23,21 @@ public:
     virtual void actualPlay();
     virtual void actualStop();
 
-    void handeDecodeSpeed();
-
-    void calcFps();
-
-    double fps;
-
-    ANativeWindow* window = 0;
-
     ANativeWindow *getWindow() const;
-
     void setWindow(ANativeWindow *window);
 
+
+private:
+    double fps;
+    ANativeWindow* window = 0;
     pthread_mutex_t surfaceMutex;
 
     double syc(double delay);
-
     void draw(uint8_t *pString[4], int pInt[4]);
+
+    void handeDecodeSpeed();
+    void calcFps();
+    void release();
 };
 
 

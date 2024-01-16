@@ -38,12 +38,11 @@ StreamAudio::StreamAudio(JavaCaller *javaCaller, AVFormatContext *avFormatContex
     swr_init(swrContext);
 
     maxSampleBufferSize = sampleRate * sampleSize * channelLayout;
-    buffer = static_cast<uint8_t *>(malloc(maxSampleBufferSize));
+    buffer = (uint8_t *)malloc(maxSampleBufferSize);
     memset(buffer,0,maxSampleBufferSize);
 
 
     decodeSpeedHandler = funAudioHandeDecodeSpeed;
-
 }
 void StreamAudio::handeDecodeSpeed() {
     while (playQueue.size() > 100 && isPlaying) {
@@ -81,15 +80,8 @@ int StreamAudio::fillBuffer() {
 }
 
 StreamAudio::~StreamAudio() {
-    if (swrContext) {
-        swr_free(&swrContext);
-        swrContext = 0;
-    }
-
-    if (buffer) {
-        free(buffer);
-        buffer = 0;
-    }
+    LOGE("StreamAudio::~StreamAudio()");
+    release();
 }
 
 
@@ -97,12 +89,10 @@ void StreamAudio::actualPlay() {
     LOGE("StreamAudio::actualPlay()");
 
     // engineObj
-    SLObjectItf engine;
     slCreateEngine(&engine,0,0,0,0,0);
     (*engine)->Realize(engine,SL_BOOLEAN_FALSE);
 
     // engineItf
-    SLEngineItf engineIterface;
     (*engine)->GetInterface(engine,SL_IID_ENGINE,&engineIterface);
 
 
@@ -119,7 +109,7 @@ void StreamAudio::actualPlay() {
 
 
     // SLDataSink
-    SLObjectItf slObjectOutputMix;
+    // 创建一个混音器对象
     (*engineIterface)->CreateOutputMix(engineIterface,&slObjectOutputMix,0,0,0);
     (*slObjectOutputMix)->Realize(slObjectOutputMix,SL_BOOLEAN_FALSE);
 
@@ -129,36 +119,77 @@ void StreamAudio::actualPlay() {
     SLDataSink slDataSink = {&slDataLocatorOutputMix,NULL};
 
 
-    // 用到的功能列表
+    // 用到的功能接口
     SLInterfaceID iterfaceIds[1] = {SL_IID_BUFFERQUEUE};
     SLboolean interfaceRequired[1] = {SL_BOOLEAN_TRUE};
+    // 用到功能接口的个数
     int interfaceCount = 1;
 
 
-    //
-    SLObjectItf slPlayerObject;
+    //slPlayerObject
     (*engineIterface)->CreateAudioPlayer(engineIterface,&slPlayerObject,
                                          &slDataSource,
                                          &slDataSink,
                                          interfaceCount,iterfaceIds,interfaceRequired);
     (*slPlayerObject)->Realize(slPlayerObject,SL_BOOLEAN_FALSE);
 
-
-    SLAndroidSimpleBufferQueueItf slAndroidSimpleBufferQueueItf;
+    // SLAndroidSimpleBufferQueueItf
     (*slPlayerObject)->GetInterface(slPlayerObject,SL_IID_BUFFERQUEUE,&slAndroidSimpleBufferQueueItf);
     (*slAndroidSimpleBufferQueueItf)->RegisterCallback(slAndroidSimpleBufferQueueItf,playerBufferQueueCallback,
                                                        this);
-
-    SLPlayItf slPlayItf;
+    // SLPlayItf
     (*slPlayerObject)->GetInterface(slPlayerObject,SL_IID_PLAY,&slPlayItf);
     (*slPlayItf)->SetPlayState(slPlayItf,SL_PLAYSTATE_PLAYING);
 
-
+    // 手动调用一次，启动播放
     playerBufferQueueCallback(slAndroidSimpleBufferQueueItf, this);
 }
 
 void StreamAudio::actualStop() {
     LOGE("StreamAudio::actualStop()");
+}
+
+void StreamAudio::release() {
+    if (swrContext) {
+        swr_free(&swrContext);
+        swrContext = 0;
+    }
+
+    if (buffer) {
+        free(buffer);
+        buffer = 0;
+    }
+
+    releaseOpenSLES();
+}
+
+void StreamAudio::releaseOpenSLES() {
+    if(slPlayItf){
+        (*slPlayItf)->SetPlayState(slPlayItf,SL_PLAYSTATE_STOPPED);
+        slPlayItf = 0;
+    }
+
+    if(slAndroidSimpleBufferQueueItf){
+        (*slAndroidSimpleBufferQueueItf)->Clear(slAndroidSimpleBufferQueueItf);
+        slAndroidSimpleBufferQueueItf = 0;
+    }
+
+    if(slObjectOutputMix){
+        (*slObjectOutputMix)->Destroy(slObjectOutputMix);
+        slObjectOutputMix = 0;
+    }
+
+    if(slPlayerObject){
+        (*slPlayerObject)->Destroy(slPlayerObject);
+        slPlayerObject = 0;
+    }
+
+    if(engine){
+        (*engine)->Destroy(engine);
+        engine = 0;
+        engineIterface = 0;
+    }
+
 }
 
 

@@ -174,7 +174,7 @@ bool Player::isFinish() {
     if (streamAudio && !streamAudio->eof()) {
         eofAudio = false;
     }
-    LOGE("eof=%d, eofAudio=%d  eofVideo=%d", eofAudio && eofVideo, eofAudio, eofVideo);
+    //LOGE("eof=%d, eofAudio=%d  eofVideo=%d", eofAudio && eofVideo, eofAudio, eofVideo);
     return eofAudio && eofVideo;
 }
 
@@ -209,6 +209,6 @@ void Player::logErrorAndRelease(int code) {
 void Player::setWindow(ANativeWindow *_window) {
     this->window = _window;
     if(streamVideo){
-        streamVideo->window = _window;
+        streamVideo->setWindow(_window);
     }
 }

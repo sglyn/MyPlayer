@@ -60,7 +60,7 @@ int Stream::steamIndex() {
 bool Stream::eof() {
     bool decodeEmpty = decodeQueue.empty();
     bool playEmpty = playQueue.empty();
-    LOGE("decodeSize=%d playSize=%d", decodeQueue.size(), playQueue.size());
+    //LOGE("decodeSize=%d playSize=%d", decodeQueue.size(), playQueue.size());
 
     if (decodeEmpty && playEmpty) {
         return true;
