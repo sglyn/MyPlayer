@@ -160,12 +160,12 @@ void StreamVideo::setWindow(ANativeWindow *window_) {
 }
 
 double StreamVideo::syc(double curVideoFrameDelay) {
+    double delay = curVideoFrameDelay;
     // 音视频同步
-    if(synchronizer){
-        return synchronizer->calcDelay(curVideoFrameDelay);
+    if (synchronizer) {
+        delay = synchronizer->calcDelay(curVideoFrameDelay);
     }
-
-    return curVideoFrameDelay;
+    return delay;
 }
 
 void StreamVideo::release() {

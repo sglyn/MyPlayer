@@ -76,7 +76,7 @@ int StreamAudio::fillBuffer() {
         clock = frame->pts * av_q2d(timeBase);
         synchronizer->clockAudio = clock;
 
-        LOGE("Audio clock=%f",clock);
+//        LOGE("Audio clock=%f",clock);
         break;
     }
 

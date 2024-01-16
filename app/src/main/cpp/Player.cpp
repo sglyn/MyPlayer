@@ -5,7 +5,7 @@
 #include <cstring>
 #include "Player.h"
 
-extern "C"{
+extern "C" {
 #include <libavutil/time.h>
 }
 
@@ -36,7 +36,7 @@ Player::~Player() {
         javaCaller = 0;
     }
 
-    if(synchronizer){
+    if (synchronizer) {
         delete synchronizer;
         synchronizer = 0;
     }
@@ -92,11 +92,11 @@ void Player::prepareInner() {
         LOGE("i=%d  avStream->index=%d", i, avStream->index);
 
         if (mediaType == AVMEDIA_TYPE_VIDEO) {
-            streamVideo = new StreamVideo(javaCaller, avFormatContext,avCodecContext, avStream);
+            streamVideo = new StreamVideo(javaCaller, avFormatContext, avCodecContext, avStream);
             streamVideo->synchronizer = synchronizer;
             streamVideo->setWindow(window);
         } else if (mediaType == AVMEDIA_TYPE_AUDIO) {
-            streamAudio = new StreamAudio(javaCaller,avFormatContext, avCodecContext, avStream);
+            streamAudio = new StreamAudio(javaCaller, avFormatContext, avCodecContext, avStream);
             streamAudio->synchronizer = synchronizer;
         }
     }
@@ -149,8 +149,8 @@ void Player::demuxInner() {
             av_packet_free(&packet);
             if (ret == AVERROR_EOF) {
                 if (isFinish()) {
-                    //LOGE("Video.decodeQueue.size=%d",streamVideo->decodeQueue.size());
-                    LOGE("Audio.playQueue.size=%d",streamAudio->playQueue.size());
+                    LOGE("Video.decodeQueue.size=%d",streamVideo->decodeQueue.size());
+                    LOGE("Audio.playQueue.size=%d", streamAudio->playQueue.size());
                     break;
                 }
             } else {
@@ -162,11 +162,11 @@ void Player::demuxInner() {
 
     isPlaying = false;
 
-    if(streamVideo){
+    if (streamVideo) {
         streamVideo->stop();
     }
 
-    if(streamAudio){
+    if (streamAudio) {
         streamAudio->stop();
     }
 
@@ -194,16 +194,16 @@ void Player::release() {
         avFormatContext = 0;
     }
 
-    if(javaCaller){
+    if (javaCaller) {
         delete javaCaller;
         javaCaller = 0;
     }
 
-    if(streamVideo){
+    if (streamVideo) {
         delete streamVideo;
         streamVideo = 0;
     }
-    if(streamAudio){
+    if (streamAudio) {
         delete streamAudio;
         streamAudio = 0;
     }
@@ -216,7 +216,7 @@ void Player::logErrorAndRelease(int code) {
 
 void Player::setWindow(ANativeWindow *_window) {
     this->window = _window;
-    if(streamVideo){
+    if (streamVideo) {
         streamVideo->setWindow(_window);
     }
 }
