@@ -38,6 +38,8 @@ set_target_properties(swscale PROPERTIES IMPORTED_LOCATION
         ${CMAKE_SOURCE_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}/libswscale.so)
 
 
+
+
 #add_library(${CMAKE_PROJECT_NAME} SHARED
 #        native-lib.cpp)
 

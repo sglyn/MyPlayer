@@ -8,6 +8,7 @@
 
 #include "JavaCaller.h"
 #include "ConcurrentBlockingDeque.h"
+#include "Synchronizer.h"
 
 
 extern "C" {
@@ -63,6 +64,8 @@ public:
     ConcurrentBlockingDeque<AVFrame *> playQueue;
 
     DecodeSpeedHandler decodeSpeedHandler = 0;
+
+    Synchronizer* synchronizer = 0;
 protected:
     bool isPlaying = false;
     JavaCaller *javaCaller = 0;
@@ -74,7 +77,10 @@ protected:
     pthread_t decodeThread;
     pthread_t playThread;
 
+
+    double clock = 0.0;
     AVRational timeBase;
+
 
 };
 

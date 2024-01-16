@@ -72,6 +72,11 @@ int StreamAudio::fillBuffer() {
                              (const uint8_t **)frame->data, frame->nb_samples);
 
         dataSize = nb * sampleSize * channelLayout;
+
+        clock = frame->pts * av_q2d(timeBase);
+        synchronizer->clockAudio = clock;
+
+        LOGE("Audio clock=%f",clock);
         break;
     }
 

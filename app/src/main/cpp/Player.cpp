@@ -11,6 +11,7 @@ extern "C"{
 
 Player::Player(JavaCaller *pCaller) : javaCaller(pCaller) {
 
+    synchronizer = new Synchronizer();
 
 }
 
@@ -33,6 +34,11 @@ Player::~Player() {
     if (javaCaller) {
         delete javaCaller;
         javaCaller = 0;
+    }
+
+    if(synchronizer){
+        delete synchronizer;
+        synchronizer = 0;
     }
 }
 
@@ -87,9 +93,11 @@ void Player::prepareInner() {
 
         if (mediaType == AVMEDIA_TYPE_VIDEO) {
             streamVideo = new StreamVideo(javaCaller, avFormatContext,avCodecContext, avStream);
+            streamVideo->synchronizer = synchronizer;
             streamVideo->setWindow(window);
         } else if (mediaType == AVMEDIA_TYPE_AUDIO) {
             streamAudio = new StreamAudio(javaCaller,avFormatContext, avCodecContext, avStream);
+            streamAudio->synchronizer = synchronizer;
         }
     }
 

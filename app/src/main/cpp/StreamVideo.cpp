@@ -66,6 +66,9 @@ void StreamVideo::actualPlay() {
         if (!isPlaying) break;
         if (ret != 1) continue;
 
+        clock = frame->best_effort_timestamp * av_q2d(timeBase);
+        synchronizer->clockVideo = clock;
+
         extraDelay = frame->repeat_pict / (2 * fps);
         delay = syc(extraDelay + frameDelay);
 
@@ -158,6 +161,10 @@ void StreamVideo::setWindow(ANativeWindow *window_) {
 
 double StreamVideo::syc(double curVideoFrameDelay) {
     // 音视频同步
+    if(synchronizer){
+        return synchronizer->calcDelay(curVideoFrameDelay);
+    }
+
     return curVideoFrameDelay;
 }
 

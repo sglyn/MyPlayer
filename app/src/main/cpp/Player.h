@@ -10,6 +10,7 @@
 #include "ConcurrentBlockingDeque.h"
 #include "StreamVideo.h"
 #include "StreamAudio.h"
+#include "Synchronizer.h"
 
 
 extern "C" {
@@ -41,7 +42,8 @@ private:
     AVFormatContext *avFormatContext = 0;
 
     char *path = 0;
-    JavaCaller *javaCaller;
+    JavaCaller *javaCaller = 0;
+    Synchronizer* synchronizer = 0;
 
     pthread_t prepareThread;    // 准备线程，打开媒体文件，探测文件音视频流，打开解码器等
     pthread_t demuxThread;      // 解封装线程
